@@ -1,12 +1,15 @@
 import { createStore } from 'vuex'
+import db from '@/db/hotels.json'
 
 export default createStore({
-  state: {
+  state () {
+    return {
+      hotels: db.hotels
+    }
   },
-  mutations: {
-  },
-  actions: {
-  },
-  modules: {
+  getters: {
+    getHotels (state) {
+      return state.hotels
+    }
   }
 })
