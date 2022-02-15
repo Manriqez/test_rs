@@ -11,7 +11,7 @@
     <div class="hotel-stats mb-2">
         <span class="hotel-stats__stars">{{ hotel.stars + ' ' + starsTextFormat(hotel.stars) }}</span>
         <span class="hotel-stats__type">{{ hotel.type }}</span>
-        <span class="hotel-stats__review_amount">Отзывы: {{ hotel.reviews_amount }} шт.</span>
+        <span class="hotel-stats__review_amount">Кол-во отзывов: {{ hotel.reviews_amount }}</span>
         <span class="hotel-stats__country">{{ hotel.country }}</span>
         <span></span>
     </div>
