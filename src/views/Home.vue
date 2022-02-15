@@ -39,7 +39,7 @@
     <h3>Количество звезд</h3>
     <div class="stars-filter card mb-2">
       <ul>
-        <li v-for="(star, idx) in hotels" :key="star">
+        <li v-for="(star, idx) in [1, 2, 3, 4, 5]" :key="star">
           <input
             type="checkbox"
             :id="'stars' + idx"
@@ -83,14 +83,24 @@
   </div>
   <div class="right-side-block card-items">
     <h1 class="text-white center" v-if="filtered.length === 0">Не найдено</h1>
-    <paginated-list :list-data="filtered" v-else></paginated-list>
+    <section v-else>
+      <ListRender
+        :filteredList="filtered"
+        :total-pages="Math.ceil(filtered.length / 4)"
+        :total="filtered.length"
+        :currentPage='currentPage'
+        @pagechanged="onPageChange"
+       />
+    </section>
   </div>
 </div>
 </div>
 </template>
 
 <script>
-import PaginatedList from '../components/PaginatedList.vue'
+import ListRender from '../components/ListRender.vue'
+import { mapActions } from 'vuex'
+
 export default {
   name: 'App',
   data () {
@@ -98,13 +108,13 @@ export default {
       search: '',
       hotels: this.$store.getters.getHotels,
       filtered: this.$store.getters.getHotels,
-      pageNumber: 0,
       selectedCountries: [],
       selectedTypes: [],
       selectedStars: [],
       review_amount: '',
       min: '',
       max: '',
+      currentPage: 1,
       uniqueHotelFilters: {
         country: [],
         type: [],
@@ -121,6 +131,10 @@ export default {
     }
   },
   methods: {
+    ...mapActions(['loadTrans']),
+    onPageChange (page) {
+      this.currentPage = page
+    },
     applyFilter () {
       this.filtered = this.hotels
         // country
@@ -139,6 +153,7 @@ export default {
           }
           return this.selectedTypes.length === 0 || selectedTypes.includes(hotel.type)
         })
+        // stars
         .filter(hotel => {
           const selectedStars = []
           for (const i in this.selectedStars) {
@@ -154,19 +169,20 @@ export default {
         .filter(hotel => {
           return hotel.min_price >= this.min && hotel.min_price <= this.max
         })
+      this.onPageChange(1)
       if (this.filtered.length === 0) {
         return 0
       }
     },
     resetFilter () {
+      this.onPageChange(1)
+      this.search = ''
       this.selectedCountries = []
       this.selectedTypes = []
       this.selectedStars = []
       this.review_amount = ''
       this.min = this.uniqueHotelFilters.price.min
       this.max = this.uniqueHotelFilters.price.max
-      console.log(this.min)
-      console.log(this.uniqueHotelFilters.price.min)
       this.applyFilter()
     },
     starsTextFormat (idx) {
@@ -180,12 +196,13 @@ export default {
       this.search = ''
     },
     validateRange () {
-      if (this.uniqueHotelFilters.price.min > this.uniqueHotelFilters.price.max) {
-        const tmp = this.uniqueHotelFilters.price.max
-        this.uniqueHotelFilters.price.max = this.uniqueHotelFilters.price.min
-        this.uniqueHotelFilters.price.min = tmp
+      if (this.min > this.max) {
+        const tmp = this.max
+        this.max = this.min
+        this.min = tmp
       }
-    }
+    },
+    pageChangeHandler () {}
   },
   beforeMount () {
     const uniqueCountry = new Set()
@@ -203,11 +220,9 @@ export default {
 
     this.min = this.uniqueHotelFilters.price.min = Math.min(...prices)
     this.max = this.uniqueHotelFilters.price.max = Math.max(...prices)
-    console.log(this.min)
-    console.log(this.uniqueHotelFilters.price.min)
   },
   components: {
-    PaginatedList
+    ListRender
   }
 }
 </script>
