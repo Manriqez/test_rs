@@ -116,9 +116,6 @@ export default {
     isPageActive (page) {
       return this.currentPage === page
     },
-    onPageChange (page) {
-      console.log(this.currentPage)
-    },
     starsTextFormat (idx) {
       if (idx === 0) {
         return 'звезда'
@@ -126,9 +123,6 @@ export default {
         return 'звезд'
       } else return 'звезды'
     }
-  },
-  afterMount () {
-    console.log(this.filteredList)
   }
 }
 </script>

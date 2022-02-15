@@ -59,7 +59,9 @@
             type="number"
             id="reviews"
             v-model.number="review_amount"
+            @keyup="inputNumberValidate(review_amount)"
             placeholder="Например, от 10"
+            min="0"
           >
         </li>
       </ul>
@@ -72,8 +74,8 @@
         <span class="output outputTwo">{{ max }}</span>
         <span class="full-range"></span>
         <span class="incl-range"></span>
-        <input min="0" max="4000" step="10" type="range" v-model.number="min" @change="validateRange">
-        <input min="0" max="4000" step="10" type="range" v-model.number="max" @change="validateRange">
+        <input min="0" :max="uniqueHotelFilters.price.max" step="10" type="range" v-model.number="min" @change="validateRange">
+        <input min="0" :max="uniqueHotelFilters.price.max" step="10" type="range" v-model.number="max" @change="validateRange">
       </div>
     </div>
 
@@ -99,7 +101,6 @@
 
 <script>
 import ListRender from '../components/ListRender.vue'
-import { mapActions } from 'vuex'
 
 export default {
   name: 'App',
@@ -131,7 +132,6 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['loadTrans']),
     onPageChange (page) {
       this.currentPage = page
     },
@@ -202,7 +202,13 @@ export default {
         this.min = tmp
       }
     },
-    pageChangeHandler () {}
+    inputNumberValidate (number) {
+      if (typeof number === 'number') {
+        this.review_amount = number
+      } else {
+        this.review_amount = 0
+      }
+    }
   },
   beforeMount () {
     const uniqueCountry = new Set()
